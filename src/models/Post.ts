@@ -2,8 +2,8 @@ export class Post {
     constructor(
         private postId: string, 
         private creatorId: string, 
-        private nameCreator: string,
-        private emailCreator: string,
+        private nameCreator: any,
+        private emailCreator: any,
         private content: string, 
         private likes: number,
         private dislikes: number, 
