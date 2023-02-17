@@ -2,8 +2,8 @@ import { BadRequestError } from "../errors/BadRequestError"
 import { Post } from "../models/Post"
 
 export interface PostInputDTO {
-    creatorId: string | undefined, 
-    content: string | undefined, 
+     content: string, 
+     token: string 
 }
 
 export interface UserCreator{
@@ -24,25 +24,6 @@ export interface PostOutputDTO {
 
 
 export class PostDTO {
-    public createPostInput(
-        creatorId: unknown,
-        content: unknown, 
-    ): PostInputDTO  {
-
-        if(typeof creatorId !== "string") {
-            throw new BadRequestError("creatorId deve ser string")
-        }
-
-        if (typeof content !== "string") {
-            throw new BadRequestError("content deve ser string")
-        }
-
-        const dto: PostInputDTO = {
-            creatorId, 
-            content, 
-        }
-        return dto
-    }
 
     public createPostOutPutDTO(post: Post): PostOutputDTO {
         const userCreator: UserCreator = { 
@@ -62,4 +43,24 @@ export class PostDTO {
         return dto
         
     } 
+
+    public createPostInputDTO(
+        content: unknown,
+        token: unknown
+    ): PostInputDTO {
+
+        if (typeof content !== "string"){
+            throw new BadRequestError("content deve ser string")
+        }
+
+        if (typeof token !== "string"){
+            throw new BadRequestError("Token Null")
+        } 
+        const dto: PostInputDTO = {
+            content: content,
+            token: token
+        }
+        return dto  
+
+    }
 }

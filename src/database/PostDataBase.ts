@@ -1,8 +1,6 @@
-import { PostDB, PostUserDB } from "../Types"
+import { PostDB, PostLikeDTO, PostUserDB } from "../Types"
 import { BaseDatabase } from "./BaseDataBase"
 import { Post } from "../models/Post"
-
-
 
 export class PostDatabase extends BaseDatabase {
     public static TABLE_POSTS = "posts"
@@ -56,17 +54,21 @@ export class PostDatabase extends BaseDatabase {
         return allPosts
     }
 
-    public  async createPost(post: Post) {
+    public  createPost = async (post: Post) =>  {
         const postDB: PostDB = {
-            postId: post.getPostId(), 
-            creatorId: post.getCreatorId(), 
+            post_id: post.getPostId(), 
+            creator_id: post.getCreatorId(), 
             content: post.getContent(), 
             likes: post.getLikes(),
             dislikes: post.getDislikes(), 
-            postCreatedAt: post.getPostCreatedAt(), 
-            postUpdatedAt: post.getPostUpdatedAt()
+            post_created_at: post.getPostCreatedAt(), 
+            post_update_at: post.getPostUpdatedAt()
         } 
         await BaseDatabase.connection(PostDatabase.TABLE_POSTS).insert(postDB)
 
+    }
+
+    public like = async (postLike: PostLikeDTO) => {
+        
     }
 }
