@@ -25,7 +25,14 @@ CREATE TABLE posts (
     FOREIGN KEY (creator_id) REFERENCES users(user_id)
 );
 
+SELECT * from posts
+WHERE post_id = "b6cd1915-7eee-44ef-9557-67e9018d1cae";
+
 SELECT * from posts;
+
+
+select * from likes_dislikes
+where post_id = "b6cd1915-7eee-44ef-9557-67e9018d1cae";
 
 INSERT INTO posts 
     VALUES (

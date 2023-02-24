@@ -1,10 +1,12 @@
-import { PostDB, PostLikeDTO, PostUserDB } from "../Types"
+import { PostDB, PostUserDB, LikeDB } from "../Types"
 import { BaseDatabase } from "./BaseDataBase"
 import { Post } from "../models/Post"
+import { Like } from "../models/Like"
 
 export class PostDatabase extends BaseDatabase {
     public static TABLE_POSTS = "posts"
     public static TABLE_USERS = "users"
+    public static TABLE_LIKES = "likes_dislikes"
 
     public async getPosts(q: string | undefined) {
         let result: PostUserDB[]
@@ -64,11 +66,86 @@ export class PostDatabase extends BaseDatabase {
             post_created_at: post.getPostCreatedAt(), 
             post_update_at: post.getPostUpdatedAt()
         } 
-        await BaseDatabase.connection(PostDatabase.TABLE_POSTS).insert(postDB)
+        await BaseDatabase
+        .connection(PostDatabase.TABLE_POSTS)
+        .insert(postDB)
 
     }
 
-    public like = async (postLike: PostLikeDTO) => {
+    public getLike = async (postId: string, userId: string) => {
+        let like: Like | undefined
+        const [ likeDB ]: LikeDB[] = await BaseDatabase
+                                    .connection(PostDatabase.TABLE_LIKES)
+                                    .where("post_id", "=", `${postId}`)
+                                    .andWhere("user_id", "=", `${userId}`)
+        if (likeDB){
+            like = new Like(
+                likeDB.user_id,
+                likeDB.post_id,
+                likeDB.like
+            )
+        }
+        return like
+    }
+
+    public createLike = async (like: Like) => {
+        const likeDB: LikeDB = {
+            user_id: like.getUserId(),
+            post_id: like.getPostId(),
+            like: like.getLike()
+        }
+        await BaseDatabase
+            .connection(PostDatabase.TABLE_LIKES)
+            .insert(likeDB)
+    }
+
+    public updateLike = async (like: Like) => {
+        const likeDB: LikeDB = {
+            user_id: like.getUserId(),
+            post_id: like.getPostId(),
+            like: like.getLike()
+        }
+        await BaseDatabase
+        .connection(PostDatabase.TABLE_LIKES)
+        .update(likeDB)
+        .where("post_id", "=", `${likeDB.post_id}`)
+        .andWhere("user_id", "=", `${likeDB.user_id}`)
+    }
+
+    public delteLike = async(postId: string) => {
+        await BaseDatabase
+        .connection(PostDatabase.TABLE_LIKES)
+        .del()
+        .where("post_id", "=", `${postId}`)
+    }
+
+    public updatePostLike = async (post: Post) => {
+        const postDB: PostDB = {
+            post_id: post.getPostId(), 
+            creator_id: post.getCreatorId(), 
+            content: post.getContent(), 
+            likes: post.getLikes(),
+            dislikes: post.getDislikes(), 
+            post_created_at: post.getPostCreatedAt(), 
+            post_update_at: post.getPostUpdatedAt()
+        } 
+        await BaseDatabase
+        .connection(PostDatabase.TABLE_POSTS)
+        .update(postDB)
+        .where("post_id", "=", `${postDB.post_id}`)
         
     }
+
+    public deletePost = async (postId: string) => {
+        await BaseDatabase
+                .connection(PostDatabase.TABLE_LIKES)
+                .del()
+                .where("post_id", "=", `${postId}`)
+         
+        await BaseDatabase
+                .connection(PostDatabase.TABLE_POSTS)
+                .del()
+                .where("post_id", "=", `${postId}`)
+    }
+    
 }
