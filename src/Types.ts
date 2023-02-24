@@ -45,7 +45,7 @@ export interface OutputToken {
     token: string
 }
 
-export interface PostLikeDTO {
+export interface LikeDB {
     user_id: string,
     post_id: string,
     like: number
